@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="themes/icon.css"/>
+		<link rel="stylesheet" type="text/css" href="themes/default/easyui.css"/>
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="plugins/jquery.layout.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/user.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			.user-form {
+				margin-left: 20px;
+				margin-top: 20px;
+			}
+			.user-form tr{
+				height: 30px;
+			}
+			.user-form .user-form-submit{
+				margin-left: 70px;
+				margin-top: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<div id="cc" class="easyui-layout" style="width:1500px;height:700px;">
+		    <div data-options="region:'north',split:true" style="height:100px;">
+		    	<h2><span id="neckname"></span> 欢迎使用汽车租赁系统</h2>
+		    </div>
+		   
+		    <div data-options="region:'center'" style="background:#eee;">
+		    	<!--todo 显示车辆信息-->
+		    	<div class="easyui-tabs" style="width:100%;height:100%">
+					<div title="租车信息" style="padding:0px;">
+						<table id="lease-info"  class="easyui-datagrid" style="width:100%;height:100%"
+								url="GetLeaseInfo"
+								rownumbers="true" fitColumns="true" singleSelect="true"
+								 pagination="true">
+							<thead>
+								<tr>
+									<th field="name" width="50">车辆名称</th>
+									<th field="carnumber" width="50">车牌号</th>
+									<th field="startdate" width="50">起始日期</th>
+									<th field="rentdays" width="50">租用时长</th>
+									<th field="method" width="50">租用方式</th>
+									<th field="returndate" width="50">应还日期</th>
+									<th field="state" width="50">当前状态</th>
+									<th field="deposit" width="50">押金</th>
+									<th field="price" width="50">应付租金</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+					<div title="个人信息修改" closable="true" style="padding:0px;">
+						<form id="userInfoUpdate" method="post">
+							<table class="user-form">
+								<tr>
+									<td><label >姓名</label></td>
+									<td><input id="user-name" name="name" class="easyui-validatebox" required="true"></td>
+								</tr>
+								<tr>
+									<td><label>电话</label></td>
+									<td><input id="user-phone" name="phone" class="easyui-validatebox" required="true" validType="phone"></td>
+								</tr>
+								<tr>
+									<td><label>身份证号</label></td>
+									<td><input id="user-idcard" name="idcard" class="easyui-validatebox" required="true"></td>
+								</tr>
+								<tr>
+									<td><label>性别</label></td>
+									<td>
+										 
+											<div style="margin-right:20px;float:left;width: 70px;">
+				                                <input class="easyui-radiobutton" checked="checked" labelWidth="30px"  name="sex" value="男" label="男">
+				                            </div>
+				                            <div style="margin-right:20px;float:left;width: 50px;">
+				                                <input class="easyui-radiobutton" labelWidth="30px" name="sex" value="女" label="女">
+				                            </div>
+			                             
+									</td>
+								</tr>
+								<tr>
+									<td><label>密码</label></td>
+									<td><input id="user-password" name="password" class="easyui-validatebox" required="true"></td>
+								</tr>
+								<tr>
+									<td><label>再次输入密码</label></td>
+									<td><input name="passwordagain" class="easyui-validatebox" required="true"></td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<input class="user-form-submit easyui-linkbutton" type="submit" value="确认修改"></input>
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					<div title="租车" closable="true" style="padding:0px;">
+						<table id="rent"  class="easyui-datagrid" style="width:100%;height:100%"
+								url="RentCar"
+								toolbar="#toolbar"
+								rownumbers="true" fitColumns="true" singleSelect="true"
+								 pagination="true">
+							<thead>
+								<tr>
+									<th field="carid" width="50">汽车编号</th>
+									<th field="name" width="50">名称</th>
+									<th field="dayrent" width="50">日租金</th>
+									<th field="weekrent" width="50">周租金</th>
+									<th field="monthrent" width="50">月租金</th>
+									<th field="deposit" width="50">押金</th>
+									<th field="type" width="50">种类</th>
+									<th field="color" width="50">颜色</th>
+									<th field="overdateprice" width="50">超时日租金</th>
+								</tr>
+							</thead>
+						</table>
+						<div id="toolbar">
+							
+						</div>
+						
+						
+						<div id="rent-dlg" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
+							closed="true" buttons="#rent-dlg-buttons">
+							<div class="ftitle">信息确认</div>
+							<form id="rent-fm" method="post">
+								<div class="fitem">
+									<label>车辆编号:</label>
+									<input id="carid" name="carid" class="easyui-validatebox" editable="false">
+								</div>
+								<div class="fitem">
+									<label>车辆名称:</label>
+									<input name="name" class="easyui-validatebox" editable="false">
+								</div>
+								<div class="fitem">
+									<label>种    类:</label>
+									<input name="type" class="easyui-validatebox" editable="false">
+								</div>
+								<div class="fitem">
+									<label>颜    色:</label>
+									<input name="color" class="easyui-validatebox" editable="false">
+								</div>
+								<div class="fitem">
+									<label>超时日租金:</label>
+									<input name="overdateprice" class="easyui-validatebox" editable="false">
+								</div>
+								<div class="fitem">
+									<label>押金:</label>
+									<input name="deposit" class="easyui-validatebox" editable="false">
+								</div>
+								<div class="fitem">
+									<label>租用方式:</label>
+									<select id="rent-method" class="easyui-combobox" name="method" style="width:200px;">
+									    <option value="day" selected="selected">日</option>
+									    <option value="week">周</option>
+									    <option value="month">月</option>
+									</select>	
+								</div>
+								<div class="fitem">
+									<label>时    长:</label>
+									<input id="rentdays"  class="easyui-numberspinner" required="required" style="width:80px;">
+								</div>
+								<div class="fitem">
+									<label>租金:</label>
+									<input id="rent-price"  name="price"  class="easyui-validatebox" editable="false">
+								</div>
+							</form>
+					</div>
+					<div id="rent-dlg-buttons">
+						<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="confirmRent()">确认</a>
+						<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#rent-dlg').dialog('close')">取消</a>
+					</div>
+					</div>
+				</div>
+		    </div>
+		</div>
+	</body>
+</html>

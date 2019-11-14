@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<style>
+			/* 最外层容器 */
+.page-wrap{
+    padding: 40px 0;
+    height: 700px;
+    background: #B0C4DB;
+}
+/* 表单框 */
+.user-con{
+    position: relative;
+    margin: 0 auto;
+    width: 400px;
+    background: #fff;
+}
+.user-con .user-title{
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+}
+.user-con .user-box{
+    padding: 20px;
+}
+/* 错误提示框 */
+.user-con .user-box .error-item{
+    position: relative;
+    padding: 4px 0 4px 40px;
+    margin-bottom: 10px;
+    border: 1px solid red;
+    color: red;
+    background: #fde9e9;
+    display: none;
+}
+/* 错误图标 */
+.user-con .user-box .error-icon{
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    font-size: 14px;
+    margin-top: -7px;
+}
+
+.user-con .user-item{
+    position: relative;
+    margin-bottom: 20px;
+}
+.user-con .user-item .user-label{
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    bottom: 1px;
+    width: 40px;
+    line-height: 36px;
+    background: #f3f3f3;
+    font-size: 18px;
+    color: #d3d3d3;
+    text-align: center;
+    border-right: 1px solid #bdbdbd;
+}
+.user-con .user-item .user-content{
+    padding: 10px 0 10px 50px;
+    width: 308px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 15px;
+    border: 1px solid #bdbdbd;
+    outline: none;
+}
+.user-con .btn-submit{
+    width: 100%;
+    padding: 2px 0;
+    text-align: center;
+    font-size: 20px;
+}
+/* 跳转链接 */
+.user-con .link-item{
+    text-align: right;
+    margin-top: 10px;
+}
+.user-con .link-item .link{
+    margin-left: 10px;
+    color: #999;
+}
+/*footer*/
+			.footer .w{
+			    padding-bottom: 30px;
+			    padding-top: 30px;
+			   
+			}
+			.links{
+			    text-align: center;
+			    line-height: 30px;
+			    color: #333;
+			    
+			}
+			.links .link{
+			    padding: 0 10px;
+			}
+			.copyright{
+			    text-align: center;
+			    line-height: 30px;
+			    color: #333;
+			}
+		</style>
+		<link rel="stylesheet" type="text/css" href="css/layout.css"/>
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript">
+			var formError = {
+			    show : function(errMsg){
+			        $('.error-item').show().find('.err-msg').text(errMsg);
+			    },
+			    hide : function(){
+			        $('.error-item').hide().find('.err-msg').text('');
+			    }
+			};
+			var request = function(param) {
+				$.ajax({
+					type: param.method,
+					url: param.url,
+					dataType: param.type || 'json',
+					data: param.data || '',
+					success: function(res) {
+						//请求登录
+						if(0 === res.status) {
+							param.success(res.data, res.msg);
+						}
+						//请求数据错误
+						else if(1 === res.status) {
+							param.error(res.msg);
+						}
+					},
+					error: function(err) {
+						param.error(err.statusText);
+					}
+				})
+			};
+			var checkUsername = function(username, resolve, reject){
+		        request({
+		            url     :'check_valid.php',
+		            data    : {
+		                type    : 'username',
+		                str     : username
+		            },
+		            method  : 'POST',
+		            success : resolve,
+		            error   : reject
+		        });
+		    }
+			var register = function(userInfo, resolve, reject){
+		        request({
+		            url     : './register.php',
+		            data    : userInfo,
+		            method  : 'POST',
+		            success : resolve,
+		            error   : reject
+		        });
+		    }
+			var submit = function(){
+		        var formData = {
+		                username        : $.trim($('#username').val()),
+		                password        : $.trim($('#password').val()),
+		                passwordConfirm : $.trim($('#password-confirm').val()),
+		                phone           : $.trim($('#phone').val()),
+		                email           : $.trim($('#email').val()),
+		                question        : $.trim($('#question').val()),
+		                answer          : $.trim($('#answer').val())
+	           };
+		            register(formData, function(res){
+		                window.location.href = './detail.html?type=register';
+		            }, function(errMsg){
+		                formError.show(errMsg);
+		            });
+		
+		    };
+			$(function(){
+				$('#username').blur(function(){
+		            var username = $.trim($(this).val());
+		            // 如果用户名为空，不做验证
+		            if(!username){
+		                return;
+		            }
+		            // 验证用户名是否存在
+		            checkUsername(username, function(res){
+		                formError.hide();
+		            }, function(errMsg){
+		                formError.show(errMsg);
+		            });
+		        });
+		        // 注册按钮的点击
+		        $('#submit').click(function(){
+		            submit();
+		        });
+		        // 如果按下回车，也进行提交
+		        $('.user-content').keyup(function(e){
+		            // keyCode == 13 表示回车键
+		            if(e.keyCode === 13){
+		                submit();
+		            }
+		        });
+			})
+		</script>
+		<title></title>
+	</head>
+
+	<body>
+		<div class="page-wrap">
+			<div class="w">
+				<div class="user-con">
+					<div class="user-title">用户注册</div>
+					<div class="user-box">
+						<div class="error-item">
+							<i class="fa fa-minus-circle error-icon"></i>
+							<p class="err-msg">Error</p>
+						</div>
+						
+						<div class="user-item">
+							<label class="user-label" for="phone">
+                                <i class="fa fa-phone"></i>
+                            </label>
+							<input class="user-content" id="phone" placeholder="请输入手机号" autocomplete="off">
+						</div>
+						<div class="user-item">
+							<label class="user-label" for="password">
+                                <i class="fa fa-lock"></i>
+                            </label>
+							<input type="password" class="user-content" id="password" placeholder="请输入密码" autocomplete="off">
+						</div>
+						<div class="user-item">
+							<label class="user-label" for="password-confirm">
+                                <i class="fa fa-lock"></i>
+                            </label>
+							<input type="password" class="user-content" id="password-confirm" placeholder="请再次输入密码" autocomplete="off">
+						</div>
+						<div class="user-item">
+							<label class="user-label" for="username">
+                                <i class="fa fa-user"></i>
+                            </label>
+							<input class="user-content" id="username" placeholder="请输入姓名" autocomplete="off">
+						</div>
+						<div class="user-item">
+							<label class="user-label" for="email">
+                                <i class="fa fa-envelope"></i>
+                            </label>
+							<input class="user-content" id="email" placeholder="请输入邮箱" autocomplete="off">
+						</div>
+						<div class="user-item">
+							<label class="user-label" for="question">
+								
+                                <i class="fa fa-question"></i>
+                            </label>
+							<input class="user-content" id="question" placeholder="请输入密码提示问题" autocomplete="off">
+						</div>
+						<div class="user-item">
+							<label class="user-label" for="answer">
+                                <i class="fa fa-key"></i>
+                            </label>
+							<input class="user-content" id="answer" placeholder="请输入密码提示问题答案" autocomplete="off">
+						</div>
+						<a class="btn btn-submit" id="submit">立即注册</a>
+						<div class="link-item">
+							<a class="link" href="./log-in.html">已有帐号，去登录>></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer class="footer">
+			<div class="w">
+		        <div class="links">
+		            <a href="index.html" class="link">主页</a>|
+		            <a href="www.baidu.com" class="link">百度</a>|
+		            <a href="www.taobao.com" class="link">淘宝</a>|
+		            <a href="www.zhihu.com" class="link">知乎</a>
+		        </div>
+		        <p class="copyright">
+		            Copyright © kevin 2018-2019 All Right Reserved
+		        </p>
+		    </div>
+		</footer>
+	</body>
+
+</html>
